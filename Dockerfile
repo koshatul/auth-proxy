@@ -13,4 +13,4 @@ ENV HTTP_PORT="80" AUDIENCE="tls-web-client-auth" BACKEND_URL=""
 
 EXPOSE 80/tcp
 COPY --from=builder /go/src/github.com/koshatul/auth-proxy/artifacts/build/release/linux/amd64/proxy /proxy
-ENTRYPOINT ["/proxy", "server"]
+ENTRYPOINT ["/proxy"]
