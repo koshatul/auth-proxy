@@ -30,4 +30,4 @@ run: artifacts/build/debug/$(GOOS)/$(GOARCH)/proxy
 
 .PHOMY: docker
 docker:
-	docker build -t koshatul/auth-proxy:$(GIT_TAG) .
+	docker build -t koshatul/auth-proxy:$(APP_VERSION) .
