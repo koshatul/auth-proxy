@@ -1,0 +1,16 @@
+package: github.com/koshatul/auth-proxy
+import:
+- package: github.com/gorilla/handlers
+  version: ^1.4.0
+- package: github.com/koshatul/jwt
+  version: ^0.1.0
+  subpackages:
+  - src/jwt
+- package: github.com/patrickmn/go-cache
+  version: ^2.1.0
+- package: github.com/spf13/cobra
+  version: ^0.0.3
+- package: github.com/spf13/viper
+  version: ^1.2.0
+- package: go.uber.org/zap
+  version: ^1.9.1

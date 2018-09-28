@@ -1,0 +1,10 @@
+{
+    "CN": "Testing Certificate",
+    "hosts": [
+        "localhost"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    }
+}
