@@ -23,14 +23,11 @@ func AuthCheckFunc(logger *zap.Logger, legacyAuthItems map[string]AuthItem, auth
 				if subtle.ConstantTimeCompare([]byte(password), []byte(v.Password)) == 1 {
 					logger.Debug("Auth Success[legacy]", zap.String("username", username))
 					return v.Username, true
-				} else {
-					logger.Info("Auth Failure[legacy]", zap.String("username", username))
-					return "", false
 				}
+				logger.Info("Auth Failure[legacy]", zap.String("username", username))
+				return "", false
 			}
-			return authProvider(username, password, r)
-		} else {
-			return authProvider(username, password, r)
 		}
+		return authProvider(username, password, r)
 	}
 }
