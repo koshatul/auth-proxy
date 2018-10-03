@@ -9,6 +9,7 @@ import (
 
 const lowerhex = "0123456789abcdef"
 
+// nolint: gocyclo
 func appendQuoted(buf []byte, s string) []byte {
 	var runeTmp [utf8.UTFMax]byte
 	for width := 0; len(s) > 0; s = s[width:] {
