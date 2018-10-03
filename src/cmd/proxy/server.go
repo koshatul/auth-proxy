@@ -16,6 +16,7 @@ import (
 	"github.com/koshatul/auth-proxy/src/httpauth"
 	"github.com/koshatul/auth-proxy/src/jwtauth"
 	"github.com/koshatul/auth-proxy/src/legacy"
+	"github.com/koshatul/auth-proxy/src/logformat"
 	"github.com/koshatul/auth-proxy/src/proxy"
 	"github.com/koshatul/jwt/src/jwt"
 	cache "github.com/patrickmn/go-cache"
@@ -130,9 +131,10 @@ func serverCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := http.NewServeMux()
-	s.Handle("/", handlers.CombinedLoggingHandler(
+	s.Handle("/", handlers.CustomLoggingHandler(
 		os.Stdout,
 		authenticator,
+		logformat.WriteCombinedLog,
 	))
 
 	bindAddr := fmt.Sprintf("%s:%d", viper.GetString("server.address"), viper.GetInt("server.port"))

@@ -3,6 +3,7 @@ package legacy
 import (
 	"crypto/subtle"
 	"net/http"
+	"net/url"
 
 	"github.com/koshatul/auth-proxy/src/httpauth"
 	"go.uber.org/zap"
@@ -22,6 +23,7 @@ func AuthCheckFunc(logger *zap.Logger, legacyAuthItems map[string]AuthItem, auth
 			if v, ok := legacyAuthItems[username]; ok {
 				if subtle.ConstantTimeCompare([]byte(password), []byte(v.Password)) == 1 {
 					logger.Debug("Auth Success[legacy]", zap.String("username", username))
+					r.URL.User = url.User(v.Username)
 					return v.Username, true
 				}
 				logger.Info("Auth Failure[legacy]", zap.String("username", username))
