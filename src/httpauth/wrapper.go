@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	cache "github.com/patrickmn/go-cache"
@@ -89,6 +90,9 @@ func (b *BasicAuthWrapper) authenticate(r *http.Request) (string, bool) {
 	if v, ok := b.Cache.Get(r.Header.Get("Authorization")); ok {
 		// ACL Record cached
 		resp := v.(cachedResponse)
+		if resp.Result {
+			r.URL.User = url.User(resp.Username)
+		}
 		return resp.Username, resp.Result
 	}
 
@@ -106,6 +110,9 @@ func (b *BasicAuthWrapper) authenticate(r *http.Request) (string, bool) {
 		},
 		viper.GetDuration("server.cache.default-expire"),
 	)
+	if authResult {
+		r.URL.User = url.User(authUser)
+	}
 	return authUser, authResult
 }
 

@@ -18,10 +18,8 @@ install: vendor $(REQ) $(_SRC) | $(USE)
 	$(eval OS    := $(word 2,$(PARTS)))
 	$(eval ARCH  := $(word 3,$(PARTS)))
 	$(eval BIN   := $(word 4,$(PARTS)))
-	@# $(eval PKG   := $(basename $(BIN)))
 	$(eval ARGS  := $(if $(findstring debug,$(BUILD)),$(DEBUG_ARGS),$(RELEASE_ARGS)))
 
-	@# CGO_ENABLED=$(CGO_ENABLED) GOOS="$(OS)" GOARCH="$(ARCH)" go install $(ARGS) "./src/cmd/$(PKG)"
 	CGO_ENABLED=$(CGO_ENABLED) GOOS="$(OS)" GOARCH="$(ARCH)" go install $(ARGS) "./src/cmd/..."
 
 .PHONY: run
