@@ -20,6 +20,8 @@ func configDefaults() {
 	viper.SetDefault("server.ca-bundle", "/etc/ca-bundle.pem")
 	viper.BindEnv("server.ca-bundle", "CA_BUNDLE_FILE")
 
+	viper.SetDefault("auth.mincost", 15)
+
 	// viper.SetDefault("server.audience", "")
 }
 
@@ -52,9 +54,9 @@ func zapConfig() zap.Config {
 		cfg = zap.NewDevelopmentConfig()
 	} else {
 		cfg = zap.NewProductionConfig()
-	}
-	if !viper.GetBool("extra-logs") {
-		cfg.Level.SetLevel(zapcore.WarnLevel)
+		if !viper.GetBool("extra-logs") {
+			cfg.Level.SetLevel(zapcore.WarnLevel)
+		}
 	}
 	return cfg
 }

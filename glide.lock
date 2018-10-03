@@ -1,5 +1,5 @@
-hash: dc1a3b254f28b4430998cfc9b101624717f3d52ef971e68132ab4083ea29aee2
-updated: 2018-09-28T13:51:45.765039+10:00
+hash: 5196be244e2fcf5cc4140c0c5556a078c93d7b8f17d37874dd226a2e47104e62
+updated: 2018-10-03T13:43:59.72253+10:00
 imports:
 - name: github.com/fsnotify/fsnotify
   version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
@@ -25,6 +25,8 @@ imports:
   - src/jwt
 - name: github.com/magiconair/properties
   version: 2c9e9502788518c97fe44e8955cd069417ee89df
+- name: github.com/manifoldco/promptui
+  version: 157c96fb638a14d268b305cf2012582431fcc410
 - name: github.com/mitchellh/mapstructure
   version: 00c29f56e2386353d58c599509e8dc3801b0d716
 - name: github.com/pascaldekloe/jwt
@@ -48,7 +50,7 @@ imports:
 - name: github.com/spf13/pflag
   version: 9a97c102cda95a86cec2345a6f09f55a939babf5
 - name: github.com/spf13/viper
-  version: 8fb642006536c8d3760c99d4fa2389f5e2205631
+  version: 2c12c60302a5a0e62ee102ca9bc996277c2f64f5
 - name: go.uber.org/atomic
   version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
 - name: go.uber.org/multierr
@@ -61,6 +63,11 @@ imports:
   - internal/color
   - internal/exit
   - zapcore
+- name: golang.org/x/crypto
+  version: 8c653846df49742c4c85ec37e5d9f8d3ba657895
+  subpackages:
+  - bcrypt
+  - blowfish
 - name: golang.org/x/sys
   version: f6cff0780e542efa0c8e864dc8fa522808f6a598
   subpackages:
