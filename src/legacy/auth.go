@@ -4,6 +4,9 @@ import (
 	"crypto/subtle"
 	"net/http"
 	"net/url"
+	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/koshatul/auth-proxy/src/httpauth"
 	"go.uber.org/zap"
@@ -21,12 +24,22 @@ func AuthCheckFunc(logger *zap.Logger, legacyAuthItems map[string]AuthItem, auth
 		if len(legacyAuthItems) > 0 {
 			// Do Legacy Auth
 			if v, ok := legacyAuthItems[username]; ok {
-				if subtle.ConstantTimeCompare([]byte(password), []byte(v.Password)) == 1 {
-					logger.Debug("Auth Success[legacy]", zap.String("username", username))
-					r.URL.User = url.User(v.Username)
-					return v.Username, true
+				if strings.HasPrefix(v.Password, `$`) {
+					logger.Debug("Testing auth with bcrypt", zap.String("username", username))
+					if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password)); err == nil {
+						logger.Debug("Auth Success[legacy(bcrypt)]", zap.String("username", username))
+						r.URL.User = url.User(v.Username)
+						return v.Username, true
+					}
+				} else {
+					logger.Debug("Testing auth with plaintext", zap.String("username", username))
+					if subtle.ConstantTimeCompare([]byte(password), []byte(v.Password)) == 1 {
+						logger.Debug("Auth Success[legacy(plain)]", zap.String("username", username))
+						r.URL.User = url.User(v.Username)
+						return v.Username, true
+					}
 				}
-				logger.Info("Auth Failure[legacy]", zap.String("username", username))
+				logger.Debug("Auth Failure[legacy]", zap.String("username", username))
 				return "", false
 			}
 		}
