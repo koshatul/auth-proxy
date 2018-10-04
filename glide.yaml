@@ -16,3 +16,21 @@ import:
   version: ^1.9.1
 - package: github.com/manifoldco/promptui
   version: ~0.3.1
+- package: github.com/docker/docker
+  version: master
+  subpackages:
+  - api/types
+  - client
+- package: github.com/onsi/ginkgo
+  version: master
+  subpackages:
+  - ginkgo
+- package: github.com/onsi/gomega
+  version: master
+- package: golang.org/x/net
+  subpackages:
+  - idna
+- package: github.com/golang/gddo
+  subpackages:
+  - httputil
+- package: github.com/dustin/go-humanize

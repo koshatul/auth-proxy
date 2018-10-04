@@ -1,0 +1,11 @@
+FROM ubuntu:xenial
+RUN apt-get update \
+    && apt-get install --quiet --yes --no-install-recommends ca-certificates=20170717~16.04.1 openssl=1.0.2g-1ubuntu4.13 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV HTTP_PORT="80" AUDIENCE="tls-web-client-auth" BACKEND_URL=""
+
+EXPOSE 80/tcp
+COPY artifacts/build/release/linux/amd64/proxy /proxy
+ENTRYPOINT ["/proxy"]

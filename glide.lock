@@ -1,12 +1,59 @@
-hash: 5196be244e2fcf5cc4140c0c5556a078c93d7b8f17d37874dd226a2e47104e62
-updated: 2018-10-03T13:43:59.72253+10:00
+hash: 6d86f4b807d22db2d4e39cfad4679a9c874f34d3607c71f394ce2636588a5a57
+updated: 2018-10-03T15:49:42.050853+10:00
 imports:
+- name: github.com/chzyer/readline
+  version: 2972be24d48e78746da79ba8e24e8b488c9880de
+- name: github.com/docker/distribution
+  version: 1cb4180b1a5b9c029b2f2beaeb38f0b5cf64e12e
+  subpackages:
+  - digestset
+  - reference
+- name: github.com/docker/docker
+  version: 0121fa3c8c4ebd2ae50285e6b6e8a484d4342c89
+  subpackages:
+  - api
+  - api/types
+  - api/types/blkiodev
+  - api/types/container
+  - api/types/events
+  - api/types/filters
+  - api/types/image
+  - api/types/mount
+  - api/types/network
+  - api/types/registry
+  - api/types/strslice
+  - api/types/swarm
+  - api/types/swarm/runtime
+  - api/types/time
+  - api/types/versions
+  - api/types/volume
+  - client
+  - errdefs
+- name: github.com/docker/go-connections
+  version: 97c2040d34dfae1d1b1275fa3a78dbdd2f41cf7e
+  subpackages:
+  - nat
+  - sockets
+  - tlsconfig
+- name: github.com/docker/go-units
+  version: 47565b4f722fb6ceae66b95f853feed578a4a51c
+- name: github.com/dustin/go-humanize
+  version: 9f541cc9db5d55bce703bd99987c9d5cb8eea45e
 - name: github.com/fsnotify/fsnotify
-  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
+  version: ccc981bf80385c528a65fbfdd49bf2d8da22aa23
+- name: github.com/gogo/protobuf
+  version: 61dbc136cf5d2f08d68a011382652244990a53a9
+  subpackages:
+  - proto
+- name: github.com/golang/gddo
+  version: 8b031907f29f163ebae1e3978af398769a5f3df6
+  subpackages:
+  - httputil
+  - httputil/header
 - name: github.com/gorilla/handlers
   version: 7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce
 - name: github.com/hashicorp/hcl
-  version: 23c074d0eceb2b8a5bfdbb271ab780cde70f05a8
+  version: 68e816d1c783414e79bc65b3994d9ab6b0a722ab
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -17,24 +64,89 @@ imports:
   - json/parser
   - json/scanner
   - json/token
+- name: github.com/icecave/honeycomb
+  version: 875220c6ea062e877c4c58b1220e801579b7767e
+  subpackages:
+  - src/backend
+  - src/name
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/juju/ansiterm
+  version: 720a0952cc2ac777afc295d9861263e2a4cf96a1
+  subpackages:
+  - tabwriter
 - name: github.com/koshatul/jwt
   version: 484b549485be554430902473d23af0a31f5eed57
   subpackages:
   - src/jwt
+- name: github.com/lunixbochs/vtclean
+  version: 2d01aacdc34a083dca635ba869909f5fc0cd4f41
 - name: github.com/magiconair/properties
-  version: 2c9e9502788518c97fe44e8955cd069417ee89df
+  version: c2353362d570a7bfa228149c62842019201cfb71
 - name: github.com/manifoldco/promptui
   version: 157c96fb638a14d268b305cf2012582431fcc410
+  subpackages:
+  - list
+  - screenbuf
+- name: github.com/mattn/go-colorable
+  version: ad5389df28cdac544c99bd7b9161a0b5b6ca9d1b
+- name: github.com/mattn/go-isatty
+  version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
+- name: github.com/Microsoft/go-winio
+  version: 97e4973ce50b2ff5f09635a57e2b88a037aae829
 - name: github.com/mitchellh/mapstructure
-  version: 00c29f56e2386353d58c599509e8dc3801b0d716
+  version: fe40af7a9c397fa3ddba203c38a5042c5d0475ad
+- name: github.com/onsi/ginkgo
+  version: 2445fc1ddb3b4d9738f16af50182d47878701cc3
+  subpackages:
+  - config
+  - extensions/table
+  - ginkgo
+  - internal/codelocation
+  - internal/containernode
+  - internal/failer
+  - internal/leafnodes
+  - internal/remote
+  - internal/spec
+  - internal/spec_iterator
+  - internal/specrunner
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - reporters/stenographer/support/go-colorable
+  - reporters/stenographer/support/go-isatty
+  - types
+- name: github.com/onsi/gomega
+  version: 7615b9433f86a8bdf29709bf288bc4fd0636a369
+  subpackages:
+  - format
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/oraclematcher
+  - internal/testingtsupport
+  - matchers
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+  - types
+- name: github.com/opencontainers/go-digest
+  version: c9281466c8b2f606084ac71339773efd177436e7
+- name: github.com/opencontainers/image-spec
+  version: 7b1e489870acb042978a3935d2fb76f8a79aff81
+  subpackages:
+  - specs-go
+  - specs-go/v1
 - name: github.com/pascaldekloe/jwt
   version: 35d940f677411863070d4f495fc21fe29c9b6289
 - name: github.com/patrickmn/go-cache
   version: a3647f8e31d79543b2d0f0ae2fe5c379d72cedc0
 - name: github.com/pelletier/go-toml
-  version: acdc4509485b587f5e675510c4f2c63e90ff68a8
+  version: 81a861c69d25a841d0c4394f0e6f84bc8c5afae0
+- name: github.com/pkg/errors
+  version: c059e472caf75dbe73903f6521a20abac245b17f
 - name: github.com/satori/go.uuid
   version: f58768cc1a7a7e77a3bd49e98cdd21419399b6a3
 - name: github.com/spf13/afero
@@ -46,9 +158,9 @@ imports:
 - name: github.com/spf13/cobra
   version: ef82de70bb3f60c65fb8eebacbb2d122ef517385
 - name: github.com/spf13/jwalterweatherman
-  version: 7c0cea34c8ece3fbeb2b27ab9b59511d360fb394
+  version: 4a4406e478ca629068e7768fc33f3f044173c0a6
 - name: github.com/spf13/pflag
-  version: 9a97c102cda95a86cec2345a6f09f55a939babf5
+  version: 298182f68c66c05229eb03ac171abe6e309ee79a
 - name: github.com/spf13/viper
   version: 2c12c60302a5a0e62ee102ca9bc996277c2f64f5
 - name: go.uber.org/atomic
@@ -64,19 +176,57 @@ imports:
   - internal/exit
   - zapcore
 - name: golang.org/x/crypto
-  version: 8c653846df49742c4c85ec37e5d9f8d3ba657895
+  version: e3636079e1a4c1f337f212cc5cd2aca108f6c900
   subpackages:
   - bcrypt
   - blowfish
+- name: golang.org/x/net
+  version: b60f3a92103dfd93dfcb900ec77c6d0643510868
+  subpackages:
+  - context
+  - context/ctxhttp
+  - html
+  - html/atom
+  - html/charset
+  - idna
+  - proxy
 - name: golang.org/x/sys
-  version: f6cff0780e542efa0c8e864dc8fa522808f6a598
+  version: 2320a9c15898af1b1b24f99700d5c1e957f9d8cf
   subpackages:
   - unix
+  - windows
 - name: golang.org/x/text
-  version: 27420a1a391f5504f73155051cd274311bf70883
+  version: 1cbadb444a806fd9430d14ad08967ed91da4fa0a
   subpackages:
+  - encoding
+  - encoding/charmap
+  - encoding/htmlindex
+  - encoding/internal
+  - encoding/internal/identifier
+  - encoding/japanese
+  - encoding/korean
+  - encoding/simplifiedchinese
+  - encoding/traditionalchinese
+  - encoding/unicode
+  - internal/tag
+  - internal/utf8internal
+  - language
+  - runes
+  - secure/bidirule
   - transform
+  - unicode/bidi
   - unicode/norm
 - name: gopkg.in/yaml.v2
-  version: 7f97868eec74b32b0982dd158a51a446d1da7eb5
-testImports: []
+  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
+testImports:
+- name: github.com/hpcloud/tail
+  version: a1dbeea552b7c8df4b542c66073e393de198a800
+  subpackages:
+  - ratelimiter
+  - util
+  - watch
+  - winfile
+- name: gopkg.in/fsnotify/fsnotify.v1
+  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
+- name: gopkg.in/tomb.v1
+  version: c131134a1947e9afd9cecfe11f4c6dff0732ae58

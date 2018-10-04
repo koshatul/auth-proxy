@@ -1,0 +1,3 @@
+package statuspage
+const STATUS_PAGE_HTML = `
+<!doctype html><title>{{ .Code }} {{ .Text }}</title><link href="https://fonts.googleapis.com/css?family=Yantramanav:100" rel=stylesheet><style>body{background:#fff;font-family:yantramanav,sans-serif;font-weight:100;font-size:3.8vmin}div{text-align:center;height:36vh;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto}h1,h2{margin:1.5vmin;padding:0;display:inline;font-weight:100;font-size:20vmin}h1{font-size:6vmin;text-transform:uppercase;white-space:nowrap}p{margin:0 5vmin;padding:0;color:gray}</style><div><header><h2>{{ .Code }}</h2><h1>{{ .Text }}</h1></header><p>{{ .Message }}</div>`

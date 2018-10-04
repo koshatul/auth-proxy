@@ -65,6 +65,8 @@ func (b *BasicAuthWrapper) Wrap(wrapped AuthenticatedHandlerFunc) http.HandlerFu
 // Require authentication, and serve our error handler otherwise.
 func (b *BasicAuthWrapper) requestAuth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Basic realm=%q`, b.Realm))
+	// w.Header().Set("Docker-Distribution-Api-Version", "registry/2.0")
+
 	b.UnauthorizedHandler.ServeHTTP(w, r)
 }
 

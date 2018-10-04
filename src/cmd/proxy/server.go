@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,6 +16,7 @@ import (
 	"github.com/koshatul/auth-proxy/src/httpauth"
 	"github.com/koshatul/auth-proxy/src/jwtauth"
 	"github.com/koshatul/auth-proxy/src/legacy"
+	"github.com/koshatul/auth-proxy/src/locator"
 	"github.com/koshatul/auth-proxy/src/logformat"
 	"github.com/koshatul/auth-proxy/src/proxy"
 	"github.com/koshatul/jwt/src/jwt"
@@ -93,10 +94,6 @@ func serverCommand(cmd *cobra.Command, args []string) {
 			logger.Debug("Failed to load custom certs", zap.String("ca-bundle", viper.GetString("server.ca-bundle")))
 		}
 	}
-	tlsConfig := &tls.Config{
-		InsecureSkipVerify: viper.GetBool("server.skip-tls-verify"),
-		RootCAs:            rootCAs,
-	}
 
 	authFunc := jwtauth.AuthCheckFunc(logger, authChan)
 
@@ -117,10 +114,27 @@ func serverCommand(cmd *cobra.Command, args []string) {
 		authFunc = legacy.AuthCheckFunc(logger, legacyUsers, authFunc)
 	}
 
+	honeycombLogger := log.New(os.Stdout, "", log.LstdFlags)
+	proxyHandler := &proxy.Handler{
+		Backend:        locator.NewEndpoint(u, viper.GetBool("server.pass-host-header")),
+		HTTPProxy:      &proxy.HTTPProxy{},
+		WebSocketProxy: &proxy.WebSocketProxy{},
+		Logger:         honeycombLogger,
+	}
+
+	// tlsConfig := &tls.Config{
+	// 	InsecureSkipVerify: viper.GetBool("server.skip-tls-verify"),
+	// 	RootCAs:            rootCAs,
+	// }
+	// proxyHandler := handlers.ProxyHeaders(
+	// 	proxy.NewSingleHostReverseProxy(u, viper.GetBool("server.pass-host-header"), tlsConfig),
+	// )
+
 	authenticator := &httpauth.BasicAuthHandler{
-		Handler: handlers.ProxyHeaders(
-			proxy.NewSingleHostReverseProxy(u, viper.GetBool("server.pass-host-header"), tlsConfig),
-		),
+		Handler: proxyHandler,
+		// Handler: handlers.ProxyHeaders(
+		// 	oldproxy.NewSingleHostReverseProxy(u, viper.GetBool("server.pass-host-header"), tlsConfig),
+		// ),
 		RemoveAuth: viper.GetBool("server.remove-authorization-header"),
 		BasicAuthWrapper: &httpauth.BasicAuthWrapper{
 			Cache:    cache.New(viper.GetDuration("server.cache.default-expire"), time.Minute),
