@@ -33,3 +33,7 @@ docker:
 .PHONY: docker-local
 docker-local: artifacts/build/release/linux/amd64/proxy
 	docker build -t koshatul/auth-proxy:$(APP_VERSION) -f Dockerfile.local .
+
+.PHONY: docker-test
+docker-test:
+	docker run -ti --rm -v $(shell pwd):/go/src/github.com/koshatul/auth-proxy --workdir /go/src/github.com/koshatul/auth-proxy golang:1.10 make
