@@ -2,7 +2,7 @@ MATRIX_OS ?= darwin linux windows
 MATRIX_ARCH ?= amd64
 
 GIT_HASH ?= $(shell git show -s --format=%h)
-GIT_TAG ?= $(shell git tag -l --merged $(GIT_HASH))
+GIT_TAG ?= $(shell git tag -l --merged $(GIT_HASH) | tail -n1)
 APP_VERSION ?= $(if $(TRAVIS_TAG),$(TRAVIS_TAG),$(if $(GIT_TAG),$(GIT_TAG),$(GIT_HASH)))
 APP_DATE ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
@@ -26,6 +26,10 @@ install: vendor $(REQ) $(_SRC) | $(USE)
 run: artifacts/build/debug/$(GOOS)/$(GOARCH)/proxy
 	$< $(RUN_ARGS)
 
-.PHOMY: docker
+.PHONY: docker
 docker:
 	docker build -t koshatul/auth-proxy:$(APP_VERSION) .
+
+.PHONY: docker-local
+docker-local: artifacts/build/release/linux/amd64/proxy
+	docker build -t koshatul/auth-proxy:$(APP_VERSION) -f Dockerfile.local .
