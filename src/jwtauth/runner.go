@@ -65,17 +65,31 @@ func doAuthRunner(ctx context.Context, logger *zap.Logger, verifier jwt.Verifier
 // AuthCheckFunc returns a authentication check function for use with `httpauth.BasicAuth()``
 func AuthCheckFunc(logger *zap.Logger, authChan chan *AuthRequest) httpauth.AuthProvider {
 	return func(username, password string, r *http.Request) (string, bool) {
-		recCh := make(chan *AuthResponse)
+		recUserCh := make(chan *AuthResponse)
+		recPassCh := make(chan *AuthResponse)
 		authChan <- &AuthRequest{
 			Token:         []byte(username),
-			ReturnChannel: recCh,
+			ReturnChannel: recUserCh,
 		}
-		response := <-recCh
+		authChan <- &AuthRequest{
+			Token:         []byte(password),
+			ReturnChannel: recPassCh,
+		}
 
+		// Test username for token
+		response := <-recUserCh
 		if response.Error == nil && !strings.EqualFold(response.Result.Subject, "") {
 			logger.Debug("Auth Success", zap.String("username", response.Result.Subject), zap.Bool("online", response.Result.IsOnline), zap.String("uuid", response.Result.ID), zap.Error(response.Error))
 			return response.Result.Subject, true
 		}
+
+		// Test password for token
+		response = <-recPassCh
+		if response.Error == nil && !strings.EqualFold(response.Result.Subject, "") {
+			logger.Debug("Auth Success", zap.String("username", response.Result.Subject), zap.Bool("online", response.Result.IsOnline), zap.String("uuid", response.Result.ID), zap.Error(response.Error))
+			return response.Result.Subject, true
+		}
+
 		logger.Info("Auth Failure", zap.String("username", response.Result.Subject), zap.Bool("online", response.Result.IsOnline), zap.String("uuid", response.Result.ID), zap.Error(response.Error))
 		return "", false
 	}
