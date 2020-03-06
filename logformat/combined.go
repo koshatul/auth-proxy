@@ -18,19 +18,19 @@ import (
 // status and size are used to provide the response HTTP status and size.
 func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int, size int) []byte {
 	username := "-"
-	if url.User != nil {
-		if name := url.User.Username(); name != "" {
+
+	switch {
+	case req.URL.User != nil:
+		if name := req.URL.User.Username(); name != "" {
 			username = name
 		}
-	}
-	if req.URL.User != nil {
-		if name := req.URL.User.Username(); name != "" {
+	case url.User != nil:
+		if name := url.User.Username(); name != "" {
 			username = name
 		}
 	}
 
 	host, _, err := net.SplitHostPort(req.RemoteAddr)
-
 	if err != nil {
 		host = req.RemoteAddr
 	}
@@ -43,6 +43,7 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 	if req.ProtoMajor == 2 && req.Method == "CONNECT" {
 		uri = req.Host
 	}
+
 	if uri == "" {
 		uri = url.RequestURI()
 	}
@@ -63,6 +64,7 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 	buf = append(buf, strconv.Itoa(status)...)
 	buf = append(buf, " "...)
 	buf = append(buf, strconv.Itoa(size)...)
+
 	return buf
 }
 
@@ -76,5 +78,5 @@ func WriteCombinedLog(writer io.Writer, params handlers.LogFormatterParams) {
 	buf = append(buf, `" "`...)
 	buf = appendQuoted(buf, params.Request.UserAgent())
 	buf = append(buf, '"', '\n')
-	writer.Write(buf)
+	_, _ = writer.Write(buf)
 }

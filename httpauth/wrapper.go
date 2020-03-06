@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	cache "github.com/patrickmn/go-cache"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -38,6 +38,7 @@ type BasicAuthWrapper struct {
 	Logger              *zap.Logger
 	AuthFunc            AuthProvider
 	UnauthorizedHandler http.Handler
+	CacheDuration       time.Duration
 }
 
 /*
@@ -51,13 +52,16 @@ func (b *BasicAuthWrapper) Wrap(wrapped AuthenticatedHandlerFunc) http.HandlerFu
 	if b.UnauthorizedHandler == nil {
 		b.UnauthorizedHandler = http.HandlerFunc(defaultUnauthorizedHandler)
 	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check that the provided details match
 		if username, ok := b.authenticate(r); ok {
 			ar := &AuthenticatedRequest{Request: *r, Username: username}
 			wrapped(w, ar)
+
 			return
 		}
+
 		b.requestAuth(w, r)
 	}
 }
@@ -76,8 +80,6 @@ type cachedResponse struct {
 // authenticate retrieves and then validates the user:password combination provided in
 // the request header. Returns 'false' if the user has not successfully authenticated.
 func (b *BasicAuthWrapper) authenticate(r *http.Request) (string, bool) {
-	const basicScheme string = "Basic "
-
 	if r == nil {
 		return "", false
 	}
@@ -93,6 +95,7 @@ func (b *BasicAuthWrapper) authenticate(r *http.Request) (string, bool) {
 		if resp.Result {
 			r.URL.User = url.User(resp.Username)
 		}
+
 		return resp.Username, resp.Result
 	}
 
@@ -108,11 +111,13 @@ func (b *BasicAuthWrapper) authenticate(r *http.Request) (string, bool) {
 			Username: authUser,
 			Result:   authResult,
 		},
-		viper.GetDuration("server.cache.default-expire"),
+		b.CacheDuration,
 	)
+
 	if authResult {
 		r.URL.User = url.User(authUser)
 	}
+
 	return authUser, authResult
 }
 

@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/manifoldco/promptui"
+	"github.com/na4ma4/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// nolint: gochecknoglobals // cobra uses globals in main
 var cmdMakePassword = &cobra.Command{
 	Use:    "mkpasswd <username> [password]",
 	Short:  "Generate a compatible hash for the legacy password",
@@ -18,18 +20,21 @@ var cmdMakePassword = &cobra.Command{
 	Hidden: true,
 }
 
+// nolint:gochecknoinits // init is used in main for cobra
 func init() {
 	rootCmd.AddCommand(cmdMakePassword)
 }
 
 // Added for future legacy support of bcrypted passwords
 func makePasswordCommand(cmd *cobra.Command, args []string) {
-	cfg := zapConfig()
-	logger, _ := cfg.Build()
-	defer logger.Sync()
+	cfg := config.NewViperConfigFromViper(viper.GetViper(), "auth-proxy")
+
+	logger, _ := cfg.ZapConfig().Build()
+	defer logger.Sync() //nolint:errcheck
 
 	username := args[0]
 	password := ""
+
 	if len(args) > 1 {
 		// Password was specified on the command line
 		password = args[1]
@@ -40,20 +45,20 @@ func makePasswordCommand(cmd *cobra.Command, args []string) {
 			Mask:  '*',
 		}
 		var err error
-		password, err = prompt.Run()
-		if err != nil {
-			logger.Panic("Password entry failure", zap.Error(err))
+
+		if password, err = prompt.Run(); err != nil {
+			logger.Panic("password entry failure", zap.Error(err))
 		}
 	}
 
-	logger.Debug("Username and Password", zap.String("username", username), zap.String("password", password))
+	logger.Debug("username and password", zap.String("username", username), zap.String("password", password))
 
-	pw, err := bcrypt.GenerateFromPassword([]byte(password), viper.GetInt("auth.mincost"))
+	pw, err := bcrypt.GenerateFromPassword([]byte(password), cfg.GetInt("auth.mincost"))
 	if err != nil {
-		logger.Panic("Generate password failure", zap.Error(err))
+		logger.Panic("generate password failure", zap.Error(err))
 	}
 
-	logger.Debug("Password Returned", zap.ByteString("pw", pw))
+	logger.Debug("password returned", zap.ByteString("pw", pw))
 
 	fmt.Printf("%s:%s\n", username, pw)
 }

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/koshatul/auth-proxy/src/httpauth"
-	"github.com/koshatul/jwt/src/jwt"
+	"github.com/koshatul/auth-proxy/httpauth"
+	"github.com/koshatul/jwt/v2"
 	"go.uber.org/zap"
 )
 
@@ -26,26 +26,33 @@ type AuthResponse struct {
 // AuthRunner is the routine that runs the authentication checking channels
 func AuthRunner(ctx context.Context, logger *zap.Logger, verifier jwt.Verifier, authChan chan *AuthRequest) {
 	for {
-		request := <-authChan
-		go doAuthRunner(ctx, logger, verifier, request)
+		select {
+		case request := <-authChan:
+			go doAuthRunner(logger, verifier, request)
+		case <-ctx.Done():
+			return
+		}
 	}
 }
 
 // doAuthRunner is the actual authentication check process (separated so it can be tested and defers will work)
-func doAuthRunner(ctx context.Context, logger *zap.Logger, verifier jwt.Verifier, request *AuthRequest) {
+func doAuthRunner(logger *zap.Logger, verifier jwt.Verifier, request *AuthRequest) {
 	result, err := verifier.Verify(request.Token)
 	if err != nil {
 		logger.Debug("Error Verifying Token", zap.Error(err))
 		request.ReturnChannel <- &AuthResponse{
 			Error: err,
 		}
+
 		return
 	}
+
 	if strings.EqualFold(result.Subject, "") {
 		logger.Debug("Verifying Token", zap.Error(errors.New("username is empty")))
 		request.ReturnChannel <- &AuthResponse{
 			Error: err,
 		}
+
 		return
 	}
 
@@ -54,11 +61,13 @@ func doAuthRunner(ctx context.Context, logger *zap.Logger, verifier jwt.Verifier
 			Result: result,
 			Error:  errors.New("online tokens can not be validated"),
 		}
-	} else {
-		request.ReturnChannel <- &AuthResponse{
-			Result: result,
-			Error:  nil,
-		}
+
+		return
+	}
+
+	request.ReturnChannel <- &AuthResponse{
+		Result: result,
+		Error:  nil,
 	}
 }
 
@@ -79,18 +88,36 @@ func AuthCheckFunc(logger *zap.Logger, authChan chan *AuthRequest) httpauth.Auth
 		// Test username for token
 		response := <-recUserCh
 		if response.Error == nil && !strings.EqualFold(response.Result.Subject, "") {
-			logger.Debug("Auth Success", zap.String("username", response.Result.Subject), zap.Bool("online", response.Result.IsOnline), zap.String("uuid", response.Result.ID), zap.Error(response.Error))
+			logger.Debug("Auth Success",
+				zap.String("username", response.Result.Subject),
+				zap.Bool("online", response.Result.IsOnline),
+				zap.String("uuid", response.Result.ID),
+				zap.Error(response.Error),
+			)
+
 			return response.Result.Subject, true
 		}
 
 		// Test password for token
 		response = <-recPassCh
 		if response.Error == nil && !strings.EqualFold(response.Result.Subject, "") {
-			logger.Debug("Auth Success", zap.String("username", response.Result.Subject), zap.Bool("online", response.Result.IsOnline), zap.String("uuid", response.Result.ID), zap.Error(response.Error))
+			logger.Debug("Auth Success",
+				zap.String("username", response.Result.Subject),
+				zap.Bool("online", response.Result.IsOnline),
+				zap.String("uuid", response.Result.ID),
+				zap.Error(response.Error),
+			)
+
 			return response.Result.Subject, true
 		}
 
-		logger.Info("Auth Failure", zap.String("username", response.Result.Subject), zap.Bool("online", response.Result.IsOnline), zap.String("uuid", response.Result.ID), zap.Error(response.Error))
+		logger.Info("Auth Failure",
+			zap.String("username", response.Result.Subject),
+			zap.Bool("online", response.Result.IsOnline),
+			zap.String("uuid", response.Result.ID),
+			zap.Error(response.Error),
+		)
+
 		return "", false
 	}
 }

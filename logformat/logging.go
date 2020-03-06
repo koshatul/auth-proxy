@@ -9,31 +9,40 @@ import (
 
 const lowerhex = "0123456789abcdef"
 
-// nolint: gocyclo
+// nolint: gocyclo,funlen
 func appendQuoted(buf []byte, s string) []byte {
 	var runeTmp [utf8.UTFMax]byte
+
 	for width := 0; len(s) > 0; s = s[width:] {
 		r := rune(s[0])
 		width = 1
+
 		if r >= utf8.RuneSelf {
 			r, width = utf8.DecodeRuneInString(s)
 		}
+
 		if width == 1 && r == utf8.RuneError {
 			buf = append(buf, `\x`...)
 			buf = append(buf, lowerhex[s[0]>>4])
 			buf = append(buf, lowerhex[s[0]&0xF])
+
 			continue
 		}
+
 		if r == rune('"') || r == '\\' { // always backslashed
 			buf = append(buf, '\\')
 			buf = append(buf, byte(r))
+
 			continue
 		}
+
 		if strconv.IsPrint(r) {
 			n := utf8.EncodeRune(runeTmp[:], r)
 			buf = append(buf, runeTmp[:n]...)
+
 			continue
 		}
+
 		switch r {
 		case '\a':
 			buf = append(buf, `\a`...)
@@ -71,6 +80,6 @@ func appendQuoted(buf []byte, s string) []byte {
 			}
 		}
 	}
-	return buf
 
+	return buf
 }

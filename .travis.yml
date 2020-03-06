@@ -1,18 +1,13 @@
 language: go
 go:
-- '1.10'
-- '1.11'
-- tip
-git:
-  submodules: false
+- '1.13'
+- '1.14'
+- 'tip'
 matrix:
   fast_finish: true
   allow_failures:
+  - go: '1.13'
   - go: tip
-before_install:
-  - go get -u github.com/Masterminds/glide
-install:
-  - git submodule update --init --recursive
-  - glide --debug install
-script:
-- make ci
+script: 
+- make test
+- make lint
