@@ -16,21 +16,6 @@ import (
 // AuthProvider is a function that given a username, password and request, authenticates the user.
 type AuthProvider func(username string, password string, r *http.Request) (string, bool)
 
-// AuthenticatedRequest replaces Request in Request handlers instead of http.Request
-type AuthenticatedRequest struct {
-	http.Request
-	/*
-	 Authenticated user name. Current API implies that Username is
-	 never empty, which means that authentication is always done
-	 before calling the request handler.
-	*/
-	Username string
-}
-
-// AuthenticatedHandlerFunc is like http.HandlerFunc, but takes
-// AuthenticatedRequest instead of http.Request
-type AuthenticatedHandlerFunc func(http.ResponseWriter, *AuthenticatedRequest)
-
 // BasicAuthWrapper needs a comment
 type BasicAuthWrapper struct {
 	Cache               *cache.Cache
@@ -39,31 +24,6 @@ type BasicAuthWrapper struct {
 	AuthFunc            AuthProvider
 	UnauthorizedHandler http.Handler
 	CacheDuration       time.Duration
-}
-
-/*
-Wrap BasicAuthenticator returns a function, which wraps an
-AuthenticatedHandlerFunc converting it to http.HandlerFunc. This
-wrapper function checks the authentication and either sends back
-required authentication headers, or calls the wrapped function with
-authenticated username in the AuthenticatedRequest.
-*/
-func (b *BasicAuthWrapper) Wrap(wrapped AuthenticatedHandlerFunc) http.HandlerFunc {
-	if b.UnauthorizedHandler == nil {
-		b.UnauthorizedHandler = http.HandlerFunc(defaultUnauthorizedHandler)
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Check that the provided details match
-		if username, ok := b.authenticate(r); ok {
-			ar := &AuthenticatedRequest{Request: *r, Username: username}
-			wrapped(w, ar)
-
-			return
-		}
-
-		b.requestAuth(w, r)
-	}
 }
 
 // Require authentication, and serve our error handler otherwise.
